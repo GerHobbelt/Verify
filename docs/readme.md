@@ -44,6 +44,7 @@ To change this file edit the source file and then run MarkdownSnippets.
   * [Custom Diff Tool](https://github.com/VerifyTests/DiffEngine/blob/master/docs/diff-tool.custom.md)
   * [Using anonymous types](/docs/anonymous-types.md)
   * [Verifying binary data](/docs/binary.md)
+  * [Exception Message Format](/docs/exception-message-format.md)
   * [Build server](/docs/build-server.md)
   * [Comparers](/docs/comparer.md)
   * [Converters](/docs/converter.md)
@@ -53,4 +54,5 @@ To change this file edit the source file and then run MarkdownSnippets.
   * [TempFile](/docs/temp-file.md)
   * [FSharp Usage](/docs/fsharp.md)
   * [Compared to ApprovalTests](/docs/compared-to-approvaltests.md)
+  * [AI Usage](/docs/ai-usage.md)
   * [Plugins](/docs/plugins.md)<!-- endInclude -->

@@ -20,14 +20,17 @@ updated to the new result.<!-- endInclude -->
 ## Sponsors
 
 
-### Entity Framework Extensions<!-- include: zzz. path: /docs/mdsource/zzz.include.md -->
+### Entity Framework Extensions<!-- include: sponsors. path: /docs/mdsource/sponsors.include.md -->
 
 [Entity Framework Extensions](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify) is a major sponsor and is proud to contribute to the development this project.
 
-[![Entity Framework Extensions](https://raw.githubusercontent.com/VerifyTests/Verify/refs/heads/main/docs/zzz.png)](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify)<!-- endInclude -->
+[![Entity Framework Extensions](https://raw.githubusercontent.com/VerifyTests/Verify/refs/heads/main/docs/zzz.png)](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify)
 
+### Developed using JetBrains IDEs
 
-### TestMu AI<!-- include: TestMu. path: /docs/mdsource/TestMu.include.md -->
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
+
+### TestMu AI
 
 <p style="font-size:21px; color:black;">Browser testing via<br>
   <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=verify" target="_blank">

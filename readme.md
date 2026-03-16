@@ -29,25 +29,23 @@ updated to the new result.<!-- endInclude -->
 
 ## Sponsors
 
-### Entity Framework Extensions<!-- include: zzz. path: /docs/mdsource/zzz.include.md -->
+### Entity Framework Extensions<!-- include: sponsors. path: /docs/mdsource/sponsors.include.md -->
 
 [Entity Framework Extensions](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify) is a major sponsor and is proud to contribute to the development this project.
 
-[![Entity Framework Extensions](https://raw.githubusercontent.com/VerifyTests/Verify/refs/heads/main/docs/zzz.png)](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify)<!-- endInclude -->
+[![Entity Framework Extensions](https://raw.githubusercontent.com/VerifyTests/Verify/refs/heads/main/docs/zzz.png)](https://entityframework-extensions.net/?utm_source=simoncropp&utm_medium=Verify)
 
+### Developed using JetBrains IDEs
 
-### TestMu AI<!-- include: TestMu. path: /docs/mdsource/TestMu.include.md -->
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
+
+### TestMu AI
 
 <p style="font-size:21px; color:black;">Browser testing via<br>
   <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=verify" target="_blank">
     <img src="docs/TestMu.png" style="vertical-align: middle;" width="500" />
   </a>
 </p><!-- endInclude -->
-
-
-### JetBrains
-
-[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSourceSupport)
 
 
 ## Requirements
@@ -962,11 +960,14 @@ To opt out of this feature, include the following in the project file:
 * [Verify.ClosedXml](https://github.com/VerifyTests/Verify.ClosedXml): Verification of Excel documents via [ClosedXml](https://github.com/ClosedXML/ClosedXML).
 * [Verify.CsvHelper](https://github.com/VerifyTests/Verify.CsvHelper): Verification of CSVs via [CsvHelper](https://joshclose.github.io/CsvHelper/).
 * [Verify.DiffPlex](https://github.com/VerifyTests/Verify.DiffPlex): Comparison of text via [DiffPlex](https://github.com/mmanela/diffplex).
+* [Verify.Diagnostics](https://github.com/VerifyTests/Verify.Diagnostics): Verification of [System.Diagnostics.Activity](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.activity) types.
+* [Verify.OpenTelemetry](https://github.com/VerifyTests/Verify.OpenTelemetry): Verification of [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry) types.
 * [Verify.DocNet](https://github.com/VerifyTests/Verify.DocNet): Verification of pdfs via [DocNet](https://github.com/GowenGit/docnet).
 * [Verify.EmailPreviewServices](https://github.com/VerifyTests/Verify.EmailPreviewServices): Verification of html emails via [EmailPreviewServices](https://emailpreviewservices.com).
 * [Verify.EntityFramework](https://github.com/VerifyTests/Verify.EntityFramework): Verification of EntityFramework bits.
 * [Verify.FakeItEasy](https://github.com/VerifyTests/Verify.FakeItEasy): Verification of [FakeItEasy](https://fakeiteasy.github.io/) bits.
 * [Verify.Flurl](https://github.com/VerifyTests/Verify.Flurl): Verification of [Flurl](https://flurl.dev/) bits.
+* [Verify.GraphQL](https://github.com/VerifyTests/Verify.GraphQL): Verification of [GraphQL.NET](https://github.com/graphql-dotnet/graphql-dotnet) bits.
 * [Verify.HeadlessBrowsers](https://github.com/VerifyTests/Verify.HeadlessBrowsers): Verification of Web UIs using [Playwright](https://github.com/microsoft/playwright-sharp), [Puppeteer Sharp](https://github.com/hardkoded/puppeteer-sharp), or [Selenium](https://www.selenium.dev).
 * [Verify.Http](https://github.com/VerifyTests/Verify.Http): Verification of Http bits.
 * [Verify.ICSharpCode.Decompiler](https://github.com/VerifyTests/Verify.ICSharpCode.Decompiler): Comparison of assemblies and types via [ICSharpCode.Decompiler](https://github.com/icsharpcode/ILSpy/wiki/Getting-Started-With-ICSharpCode.Decompiler).
@@ -1017,13 +1018,13 @@ To opt out of this feature, include the following in the project file:
 <!-- endInclude -->
 
 
-### TestMu AI<!-- include: TestMu. path: /docs/mdsource/TestMu.include.md -->
+## TestMu AI
 
 <p style="font-size:21px; color:black;">Browser testing via<br>
   <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=verify" target="_blank">
     <img src="docs/TestMu.png" style="vertical-align: middle;" width="500" />
   </a>
-</p><!-- endInclude -->
+</p>
 
 
 ## More Documentation
@@ -1065,6 +1066,7 @@ To opt out of this feature, include the following in the project file:
   * [Custom Diff Tool](https://github.com/VerifyTests/DiffEngine/blob/master/docs/diff-tool.custom.md)
   * [Using anonymous types](/docs/anonymous-types.md)
   * [Verifying binary data](/docs/binary.md)
+  * [Exception Message Format](/docs/exception-message-format.md)
   * [Build server](/docs/build-server.md)
   * [Comparers](/docs/comparer.md)
   * [Converters](/docs/converter.md)
@@ -1074,6 +1076,7 @@ To opt out of this feature, include the following in the project file:
   * [TempFile](/docs/temp-file.md)
   * [FSharp Usage](/docs/fsharp.md)
   * [Compared to ApprovalTests](/docs/compared-to-approvaltests.md)
+  * [AI Usage](/docs/ai-usage.md)
   * [Plugins](/docs/plugins.md)<!-- endInclude -->
 
 
