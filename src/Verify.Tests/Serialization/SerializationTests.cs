@@ -15,6 +15,14 @@ public class SerializationTests
     {
         VerifierSettings.AddExtraDateTimeFormat("F");
         VerifierSettings.AddExtraDateTimeOffsetFormat("F");
+#if NET6_0_OR_GREATER
+        // The only Date format enabled by default is "d", the culture short date pattern.
+        // In cultures where that pattern has a two digit year (en-AU is "d/M/yy"), a
+        // rendered Date.MinValue/MaxValue cannot round trip: "1/1/01" reads back as 2001.
+        // "D", the long date pattern, has a four digit year in every culture, so
+        // DateTimeMin/DateTimeMax render DateString with it.
+        VerifierSettings.AddExtraDateFormat("D");
+#endif
     }
 
     [Fact]
@@ -1287,7 +1295,7 @@ public class SerializationTests
             DateTime = dateTime,
             Date = Date.MinValue,
             DateNullable = Date.MinValue,
-            DateString = Date.MinValue.ToString(),
+            DateString = Date.MinValue.ToString("D"),
             DateTimeNullable = dateTime,
             DateTimeString = dateTime.ToString("F"),
             DateTimeOffset = dateTimeOffset,
@@ -1308,7 +1316,7 @@ public class SerializationTests
             DateTime = dateTime,
             Date = Date.MaxValue,
             DateNullable = Date.MaxValue,
-            DateString = Date.MaxValue.ToString(),
+            DateString = Date.MaxValue.ToString("D"),
             DateTimeNullable = dateTime,
             DateTimeString = dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK"),
             DateTimeOffset = dateTimeOffset,
@@ -1495,6 +1503,14 @@ public class SerializationTests
     {
         var id = Guid.NewGuid();
         return Verify($"The string {id} ")
+            .ScrubInlineGuids();
+    }
+
+    [Fact]
+    public Task ScrubInlineGuidsNFormatInString()
+    {
+        var id = Guid.NewGuid();
+        return Verify($"The string {id:N} ")
             .ScrubInlineGuids();
     }
 
@@ -2023,6 +2039,39 @@ public class SerializationTests
             Property = "a\r\nb\\nc"
         });
 
+    [Fact]
+    public Task ScrubEngineMethods() =>
+        Verify("value id-123 abc")
+            .ScrubReplace("abc", "xyz")
+            .ScrubWindow(
+                minLength: 4,
+                maxLength: 6,
+                matcher: (window, _, _) =>
+                {
+                    if (window.Length == 6 &&
+                        window.StartsWith("id-"))
+                    {
+                        return "{Id}";
+                    }
+
+                    return null;
+                })
+            .ScrubMatch(
+                (ReadOnlySpan<char> segment, Counter _, IReadOnlyDictionary<string, object> _, out int index, out int length, out string? replacement) =>
+                {
+                    index = segment.IndexOf("value".AsSpan());
+                    if (index == -1)
+                    {
+                        length = 0;
+                        replacement = null;
+                        return false;
+                    }
+
+                    length = "value".Length;
+                    replacement = "{Value}";
+                    return true;
+                });
+
     // ReSharper disable once UnusedMember.Local
     static void List()
     {
@@ -2067,6 +2116,31 @@ public class SerializationTests
         #region AddScrubber
 
         verifySettings.AddScrubber(_ => _.Remove(0, 100));
+
+        #endregion
+
+        #region ScrubEngine
+
+        verifySettings.ScrubReplace("abc", "xyz");
+
+        verifySettings.ScrubWindow(
+            minLength: 3,
+            maxLength: 10,
+            matcher: (window, _, _) =>
+            {
+                if (window.StartsWith("id-"))
+                {
+                    return "{Id}";
+                }
+
+                return null;
+            });
+
+        #endregion
+
+        #region ScrubEngineExtension
+
+        verifySettings.ScrubReplace("json", "abc", "xyz");
 
         #endregion
     }

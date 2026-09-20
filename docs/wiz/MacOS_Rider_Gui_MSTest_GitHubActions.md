@@ -17,10 +17,10 @@ Add the following packages to the test project:
 <!-- snippet: mstest-nugets -->
 <a id='snippet-mstest-nugets'></a>
 ```csproj
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
-<PackageReference Include="MSTest.TestAdapter" Version="4.3.0" />
-<PackageReference Include="MSTest.TestFramework" Version="4.3.0" />
-<PackageReference Include="Verify.MSTest" Version="31.21.0" />
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+<PackageReference Include="MSTest.TestAdapter" Version="4.3.2" />
+<PackageReference Include="MSTest.TestFramework" Version="4.3.2" />
+<PackageReference Include="Verify.MSTest" Version="31.25.0" />
 ```
 <sup><a href='/usages/MSTestNugetUsage/MSTestNugetUsage.csproj#L7-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-mstest-nugets' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -98,6 +98,26 @@ On Windows, if `core.autocrlf` is set to `true`, files may show as modified with
 git config --global core.autocrlf input
 ```
 
+`core.autocrlf=true` normalizes line endings to lf on commit, and converts them back to crlf on checkout. So the blobs stored in git are lf while the files on disk are crlf. Verify rejects a verified file containing a carriage return, so tests fail even though the committed content is correct.
+
+Adding the `.gitattributes` entries above overrides `core.autocrlf` for those paths, but it does not update files that are already checked out. Git re-applies line ending filters only when a file's blob changes, and since `core.autocrlf` already normalized those blobs to lf, adding the attributes changes no content. A one-time refresh of the working tree is required after committing `.gitattributes`:
+
+```
+git rm --cached -r .
+git reset --hard
+```
+
+This discards uncommitted changes, so commit or stash first.
+
+Where crlf was committed to the blobs (`core.autocrlf` unset or `false`), the content itself needs normalizing instead. In that case `git add --renormalize .` produces a commit that converts the blobs, and checkout updates each working tree as it is pulled:
+
+```
+git add --renormalize .
+git commit -m "Normalize line endings"
+```
+
+Build servers that reuse a cached working directory between runs need the same refresh as a developer machine. A build that clones fresh each run is unaffected.
+
 
 #### EditorConfig settings
 
@@ -119,7 +139,14 @@ indent_size = 2
 indent_style = space
 ```
 
-**Note that the above are suggested for subset of text extension. Add others as required based on the text file types being verified.**<!-- endInclude -->
+**Note that the above are suggested for subset of text extension. Add others as required based on the text file types being verified.**
+
+**Visual Studio Code** does not apply the EditorConfig `end_of_line` setting natively. Without it, accepting a snapshot by editing in the built-in diff editor (for example reverting a block from received into verified) can save the verified file with `crlf` on Windows, taken from the default `files.eol`. Verify then rejects that file for containing a carriage return. Installing the [EditorConfig for VS Code extension](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) applies `end_of_line = lf` on save. Setting `"files.eol": "\n"` in Visual Studio Code settings has the same effect without the extension.
+
+
+#### Newline tolerance
+
+The settings above are the recommended approach, since they keep the content on disk consistent for everyone working on a repository. Where per developer setup cannot be relied on, Verify can instead be made tolerant of carriage returns and of a trailing newline in verified files. Both are opt in, and both have side effects worth understanding before enabling them. See [Newline tolerance](/docs/newline-tolerance.md).<!-- endInclude -->
 
 
 ### Conventions check

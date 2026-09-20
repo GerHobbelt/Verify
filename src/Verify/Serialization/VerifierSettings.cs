@@ -163,10 +163,16 @@ public static partial class VerifierSettings
         UniquePrefixDisabled = false;
         UseUniqueDirectorySplitMode = false;
         omitContentFromException = false;
+        fixNewlinesOnRead = false;
+        ignoreTrailingNewline = false;
         encoding = new UTF8Encoding(true, true);
         addAttachments = true;
         excludedTargets = null;
         GlobalScrubbers.Clear();
+        ExtensionMappedGlobalScrubbers.Clear();
+        GlobalSpanScrubbers.Clear();
+        ExtensionMappedGlobalSpanScrubbers.Clear();
+        EngineScrubberSet.InvalidateGlobalCache();
         GlobalIgnoredParameters = null;
         GlobalIgnoreConstructorParameters = false;
     }

@@ -23,7 +23,7 @@ var target = new GuidTarget
 
 await Verify(target);
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L2320-L2333' title='Snippet source file'>snippet source</a> | <a href='#snippet-guid' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L2394-L2407' title='Snippet source file'>snippet source</a> | <a href='#snippet-guid' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Results in the following:
@@ -56,7 +56,7 @@ var settings = new VerifySettings();
 settings.DontScrubGuids();
 await Verify(target, settings);
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L694-L700' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuids' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L702-L708' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuids' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -68,7 +68,7 @@ await Verify(target, settings);
 await Verify(target)
     .DontScrubGuids();
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L708-L713' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuidsFluent' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L716-L721' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuidsFluent' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -79,13 +79,15 @@ await Verify(target)
 ```cs
 VerifierSettings.DontScrubGuids();
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1801-L1805' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuidsGlobal' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1817-L1821' title='Snippet source file'>snippet source</a> | <a href='#snippet-DontScrubGuidsGlobal' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
 ## Inline Guids
 
-Strings containing inline Guids can also be scrubbed. To enable this behavior, use:
+Strings containing inline Guids can also be scrubbed. Guids in the `D` format (`00000000-0000-0000-0000-000000000000`) and the `N` format (`00000000000000000000000000000000`) are matched when bounded by non-alphanumeric characters. `B` and `P` formatted Guids are covered by the `D` format matching between their delimiters. Note that any 32 character hex sequence is a valid `N` format Guid, so hex content of that exact length (an MD5 hash for example) will also be scrubbed.
+
+To enable this behavior, use:
 
 
 ### Instance
@@ -103,7 +105,7 @@ public Task ScrubInlineGuidsInstance()
         settings);
 }
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1857-L1869' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsInstance' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1873-L1885' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsInstance' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -117,7 +119,7 @@ public Task ScrubInlineGuidsFluent() =>
     Verify("content 651ad409-fc30-4b12-a47e-616d3f953e4c content")
         .ScrubInlineGuids();
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1848-L1855' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsFluent' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1864-L1871' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsFluent' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -133,7 +135,34 @@ public static class ModuleInitializer
         VerifierSettings.ScrubInlineGuids();
 }
 ```
-<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1836-L1845' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsGlobal' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/Serialization/SerializationTests.cs#L1852-L1861' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsGlobal' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+### Limiting to specific formats
+
+By default both the `D` and `N` formats are scrubbed. To restrict scrubbing to specific formats, pass a `GuidFormats` value. This is useful for avoiding the scrubbing of 32 character hex content (an MD5 hash for example) that would otherwise match the `N` format:
+
+<!-- snippet: ScrubInlineGuidsDashedOnly -->
+<a id='snippet-ScrubInlineGuidsDashedOnly'></a>
+```cs
+// Only the "D" format is scrubbed. The 32 char hex hash is left untouched.
+[Fact]
+public Task ScrubInlineGuidsDashedOnly() =>
+    Verify("guid: 173535ae-995b-4cc6-a74e-8cd4be57039c hash: 5d41402abc4b2a76b9719d911017c592")
+        .ScrubInlineGuids(GuidFormats.Dashed);
+```
+<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L126-L134' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScrubInlineGuidsDashedOnly' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Results in the following, where the `D` format Guid is scrubbed but the hash is left untouched:
+
+<!-- snippet: GuidScrubberTests.ScrubInlineGuidsDashedOnly.verified.txt -->
+<a id='snippet-GuidScrubberTests.ScrubInlineGuidsDashedOnly.verified.txt'></a>
+```txt
+guid: Guid_1 hash: 5d41402abc4b2a76b9719d911017c592
+```
+<sup><a href='/src/Verify.Tests/GuidScrubberTests.ScrubInlineGuidsDashedOnly.verified.txt#L1-L1' title='Snippet source file'>snippet source</a> | <a href='#snippet-GuidScrubberTests.ScrubInlineGuidsDashedOnly.verified.txt' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -161,7 +190,7 @@ public Task NamedGuidInstance()
         settings);
 }
 ```
-<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L65-L81' title='Snippet source file'>snippet source</a> | <a href='#snippet-NamedGuidInstance' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L85-L101' title='Snippet source file'>snippet source</a> | <a href='#snippet-NamedGuidInstance' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -182,7 +211,7 @@ public Task NamedGuidFluent()
         .AddNamedGuid(guid, "instanceNamed");
 }
 ```
-<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L121-L135' title='Snippet source file'>snippet source</a> | <a href='#snippet-NamedGuidFluent' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L142-L156' title='Snippet source file'>snippet source</a> | <a href='#snippet-NamedGuidFluent' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -217,7 +246,7 @@ public Task InferredNamedGuidFluent()
         .AddNamedGuid(namedGuid);
 }
 ```
-<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L137-L151' title='Snippet source file'>snippet source</a> | <a href='#snippet-InferredNamedGuidFluent' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify.Tests/GuidScrubberTests.cs#L158-L172' title='Snippet source file'>snippet source</a> | <a href='#snippet-InferredNamedGuidFluent' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Result: 
