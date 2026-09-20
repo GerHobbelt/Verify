@@ -17,11 +17,29 @@ Add the following packages to the test project:
 <!-- snippet: tunit-nugets -->
 <a id='snippet-tunit-nugets'></a>
 ```csproj
-<PackageReference Include="TUnit" Version="1.61.0" />
-<PackageReference Include="Verify.TUnit" VersionOverride="33.0.0-beta.3" Version="31.25.0" />
+<PackageReference Include="TUnit" Version="1.68.17" />
+<PackageReference Include="Verify.TUnit" Version="33.1.0" />
 ```
 <sup><a href='/usages/TUnitNugetUsage/TUnitNugetUsage.csproj#L8-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-tunit-nugets' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Microsoft.Testing.Platform
+
+[Microsoft.Testing.Platform](https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro) (MTP) is the recommended way to run tests. It replaces VSTest, so `Microsoft.NET.Test.Sdk` is not required.<!-- include: testing-platform. path: /docs/mdsource/testing-platform.include.md -->
+
+### dotnet test
+
+The .NET 10 SDK added an [MTP mode to dotnet test](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test). The default VSTest mode does not run MTP test projects. Enable MTP mode by adding the following to `global.json` at the root of the repository:
+
+```json
+{
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
+}
+```
+<!-- endInclude -->
 
 
 ## Implicit Usings

@@ -17,28 +17,28 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" Pinned="true" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" Pinned="true" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.0" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.4.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.4.1" />
     <PackageVersion Include="NUnit" Version="4.6.1" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="4.4.0" />
-    <PackageVersion Include="MSTest.TestFramework" Version="4.4.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="4.4.1" />
+    <PackageVersion Include="MSTest.TestFramework" Version="4.4.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.0" />
-    <PackageVersion Include="Polyfill" Version="11.3.0" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.180" />
+    <PackageVersion Include="Polyfill" Version="11.4.0" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.181" />
     <PackageVersion Include="ProjectFiles" Version="1.4.0" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="SponsorCheck" Version="0.22.0" GitHubSponsorsAccount="VerifyTests" SponsorOwner="Verify" CheckTransitiveReferences="true" SponsorLandingUrl="https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md" />
+    <PackageVersion Include="SponsorCheck" Version="0.25.0" GitHubSponsorsAccount="VerifyTests" SponsorOwner="Verify" CheckTransitiveReferences="true" SponsorLandingUrl="https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md" />
     <PackageVersion Include="System.Drawing.Common" Version="10.0.12" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <!-- keep at 4.5.0 -->
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" Pinned="true" />
     <PackageVersion Include="TextCopy" Version="6.2.1" />
-    <PackageVersion Include="xunit.v3" Version="4.0.0" />
-    <PackageVersion Include="xunit.v3.extensibility.core" Version="4.0.0" />
-    <PackageVersion Include="TUnit" Version="1.66.27" />
-    <PackageVersion Include="TUnit.Core" Version="1.66.27" />
+    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3.extensibility.core" Version="4.0.1" />
+    <PackageVersion Include="TUnit" Version="1.68.17" />
+    <PackageVersion Include="TUnit.Core" Version="1.68.17" />
     <PackageVersion Include="YoloDev.Expecto.TestSdk" Version="0.16.1" />
-    <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
+    <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.12" />
   </ItemGroup>
 </Project>
