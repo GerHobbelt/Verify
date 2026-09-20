@@ -11,11 +11,18 @@ public class InlineTests :
     // fail on CI. The two build server tests move it back for their duration.
     Func<bool> originalIsBuildServer = InlineEngine.IsBuildServer;
 
+    // Built on demand by WriteTemplate, so the tests that never write one neither create a
+    // directory nor put a path in front of the temp path scrubber
+    TempDirectory? templates;
+
     public InlineTests() =>
         InlineEngine.IsBuildServer = () => false;
 
-    public void Dispose() =>
+    public void Dispose()
+    {
         InlineEngine.IsBuildServer = originalIsBuildServer;
+        templates?.Dispose();
+    }
 
     [Fact]
     public async Task Simple()
@@ -487,17 +494,17 @@ public class InlineTests :
     static string FakeSource() =>
         Path.Combine(Path.GetTempPath(), "VerifyInlineFakeSource.cs");
 
-    static string WriteTemplate(string body)
+    // xunit builds an instance per test, so the one template name cannot collide
+    string WriteTemplate(string body)
     {
-        var directory = Path.Combine(Path.GetTempPath(), $"VerifyInlineTests_{Guid.NewGuid():N}");
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "Template.cs");
+        templates ??= new();
+        var path = templates.BuildPath("Template.cs");
         File.WriteAllText(path, body);
         return path;
     }
 
     // The template's line endings would otherwise be whatever the checkout produced
-    static string WriteTemplate(string body, string eol) =>
+    string WriteTemplate(string body, string eol) =>
         WriteTemplate(
             body
                 .Replace("\r\n", "\n")
@@ -627,6 +634,15 @@ public class InlineTests :
         }
         """;
 
+    const string defaultTemplate =
+        """
+        class Templ
+        {
+            Task Method() =>
+                Verify(value).Snapshot(default);
+        }
+        """;
+
     [Fact]
     public async Task AutoVerifyMismatchRewritesSource()
     {
@@ -703,6 +719,29 @@ public class InlineTests :
     }
 
     [Fact]
+    public async Task AutoVerifyNewReplacesDefaultArgument()
+    {
+        // Passes either way - a lone call site is the one shape the content search did handle -
+        // and is here to pin that routing `default` to the insertion path did not break it. That
+        // path only understands the token from DiffEngine 20.0.0-beta.23 on; against an earlier
+        // one this fails with "not a string literal", which is what the guard was waiting for
+        var template = WriteTemplate(defaultTemplate);
+        try
+        {
+            var settings = new VerifySettings();
+            settings.Snapshot(null, template, 4, "default");
+            settings.AutoVerify();
+            settings.DisableDiff();
+            await Verify("newvalue", settings);
+            Assert.Contains(".Snapshot(\"newvalue\");", await File.ReadAllTextAsync(template));
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(template)!, true);
+        }
+    }
+
+    [Fact]
     public async Task AutoVerifyAlreadyApplied()
     {
         // The literal already matches (eg the other target framework accepted first),
@@ -720,6 +759,42 @@ public class InlineTests :
             var before = await File.ReadAllTextAsync(template);
             var settings = new VerifySettings();
             settings.Snapshot("stale", template, 4, "\"stale\"");
+            settings.AutoVerify();
+            settings.DisableDiff();
+            await Verify("newvalue", settings);
+            Assert.Equal(before, await File.ReadAllTextAsync(template));
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(template)!, true);
+        }
+    }
+
+    /// <summary>
+    /// The same stale-expression case as above, but where the expression is the bare `default`
+    /// token. Content searching for it walks past the already-accepted call at the hint and lands
+    /// on whichever other call site still says `default` - here another test in the same file,
+    /// which then gets a snapshot that is not its own.
+    /// </summary>
+    [Fact]
+    public async Task AutoVerifyDefaultDoesNotPatchAnotherTest()
+    {
+        var template = WriteTemplate(
+            """
+            class Templ
+            {
+                Task First() =>
+                    Verify(value).Snapshot(default);
+
+                Task Second() =>
+                    Verify(value).Snapshot("newvalue");
+            }
+            """);
+        try
+        {
+            var before = await File.ReadAllTextAsync(template);
+            var settings = new VerifySettings();
+            settings.Snapshot(null, template, 7, "default");
             settings.AutoVerify();
             settings.DisableDiff();
             await Verify("newvalue", settings);

@@ -14,11 +14,18 @@ public class InlineFSharpTests :
     // Accepting rewrites source, which InlineEngine declines to do on a build server
     Func<bool> originalIsBuildServer = InlineEngine.IsBuildServer;
 
+    // Built on demand by WriteTemplate, so the tests that never write one neither create a
+    // directory nor put a path in front of the temp path scrubber
+    TempDirectory? templates;
+
     public InlineFSharpTests() =>
         InlineEngine.IsBuildServer = () => false;
 
-    public void Dispose() =>
+    public void Dispose()
+    {
         InlineEngine.IsBuildServer = originalIsBuildServer;
+        templates?.Dispose();
+    }
 
     // What the F# compiler produces for
     //
@@ -62,7 +69,7 @@ public class InlineFSharpTests :
     {
         var settings = new VerifySettings();
         settings.IgnoreParameters();
-        settings.Snapshot(asFSharpHandsItOver, FakeSource(), 1, null, "LayoutIsNotContent");
+        settings.Snapshot(asFSharpHandsItOver, FakeSource(), 1, null);
         return Verify("line one\nline two", settings);
     }
     // end-snippet
@@ -75,7 +82,7 @@ public class InlineFSharpTests :
         var settings = new VerifySettings();
         settings.IgnoreParameters();
         settings.DisableDiff();
-        settings.Snapshot(asFSharpHandsItOver, FakeCsSource(), 1, null, "LayoutIsContentInCSharp");
+        settings.Snapshot(asFSharpHandsItOver, FakeCsSource(), 1, null);
 
         var exception = await Assert.ThrowsAsync<VerifyException>(
             async () => await Verify("line one\nline two", settings));
@@ -89,7 +96,7 @@ public class InlineFSharpTests :
     {
         var settings = new VerifySettings();
         settings.IgnoreParameters();
-        settings.Snapshot("\n        line one\n\n        ", FakeSource(), 1, null, "TrailingNewline");
+        settings.Snapshot("\n        line one\n\n        ", FakeSource(), 1, null);
         return Verify("line one\n", settings);
     }
 
@@ -99,7 +106,7 @@ public class InlineFSharpTests :
     {
         var settings = new VerifySettings();
         settings.IgnoreParameters();
-        settings.Snapshot("the value", FakeSource(), 1, null, "SingleLine");
+        settings.Snapshot("the value", FakeSource(), 1, null);
         return Verify("the value", settings);
     }
 
@@ -111,7 +118,7 @@ public class InlineFSharpTests :
         var content = "\n    indented\n    ";
         var settings = new VerifySettings();
         settings.IgnoreParameters();
-        settings.Snapshot(RenderedAsFSharp(content), FakeSource(), 1, null, "ContentThatLooksLikeLayout");
+        settings.Snapshot(RenderedAsFSharp(content), FakeSource(), 1, null);
         return Verify(content, settings);
     }
 
@@ -247,11 +254,11 @@ public class InlineFSharpTests :
     static string FakeCsSource() =>
         Path.Combine(Path.GetTempPath(), "VerifyInlineFakeSource.cs");
 
-    static string WriteTemplate(string body)
+    // xunit builds an instance per test, so the one template name cannot collide
+    string WriteTemplate(string body)
     {
-        var directory = Path.Combine(Path.GetTempPath(), $"VerifyInlineFSharpTests_{Guid.NewGuid():N}");
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "Template.fs");
+        templates ??= new();
+        var path = templates.BuildPath("Template.fs");
         File.WriteAllText(path, body);
         return path;
     }
