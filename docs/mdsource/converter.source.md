@@ -50,11 +50,50 @@ snippet: RegisterStreamConverterExtension
 snippet: FileConverterExtensionVerify
 
 
+### Text extensions
+
+A stream converter can also be registered against a text extension. This is useful when a text document needs derived targets, for example rendering html to an image for visual verification.
+
+The text target is scrubbed before being passed to the converter, so any derived targets (for example a rendered image) reflect the scrubbed content.
+
+For a custom text extension, register it as text via `FileExtensions.AddTextExtension`. Built-in text extensions (for example `html` or `csv`) do not require this.
+
+snippet: RegisterStreamConverterTextExtension
+
+snippet: TextExtensionConverterVerify
+
+
 ### Cleanup
 
 If cleanup needs to occur after verification a callback can be passes to `ConversionResult`:
 
 snippet: ConversionResultWithCleanup
+
+
+## Excluding targets
+
+Some converters emit the source document (for example a `pdf`, `docx`, or `xlsx`) alongside the info file and the derived targets. That source document is then committed as a `.verified.{extension}` file. Where the document is large, or where its bytes cannot be made deterministic, it can be excluded from the snapshot. The info file and the derived targets continue to verify.
+
+`ExcludeTargets` takes one or more extensions, and drops every matching target:
+
+snippet: ExcludeTargets
+
+Any existing verified file for an excluded extension is then reported as pending deletion.
+
+To exclude an extension for every test, call `ExcludeTargets` on `VerifierSettings` at initialization:
+
+snippet: StaticExcludeTargets
+
+Excluding every target of a verification is an error, since a verification requires at least one target.
+
+
+### Avoiding work in a converter
+
+Building the source document (for example rendering a pdf or a docx) can be expensive. When a target is excluded, it is dropped after the converter has produced it, so the work is wasted. A converter can instead check `IsTargetExcluded` on its `context` and skip producing the target entirely:
+
+snippet: ConverterExcludeCheck
+
+`IsTargetExcluded` reflects both the global and the per-verification `ExcludeTargets`, so shipping this check lets a caller opt out of the document build itself, rather than only its snapshot.
 
 
 ## Shipping

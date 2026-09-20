@@ -146,6 +146,45 @@ await VerifyFile("sample.tif");
 <!-- endSnippet -->
 
 
+### Text extensions
+
+A stream converter can also be registered against a text extension. This is useful when a text document needs derived targets, for example rendering html to an image for visual verification.
+
+The text target is scrubbed before being passed to the converter, so any derived targets (for example a rendered image) reflect the scrubbed content.
+
+For a custom text extension, register it as text via `FileExtensions.AddTextExtension`. Built-in text extensions (for example `html` or `csv`) do not require this.
+
+<!-- snippet: RegisterStreamConverterTextExtension -->
+<a id='snippet-RegisterStreamConverterTextExtension'></a>
+```cs
+// "texttoconvert" is a custom text extension, so register it as text first.
+// For built-in text extensions (eg html or csv) this step is not required.
+FileExtensions.AddTextExtension("texttoconvert");
+
+// The input text is scrubbed before being passed to the converter, so any
+// derived targets (eg a rendered image) reflect the scrubbed content.
+VerifierSettings.RegisterStreamConverter(
+    "texttoconvert",
+    async (_, stream, _) =>
+        new(
+            null,
+            [
+                new("texttoconvert", await stream.ReadStringBuilderWithFixedLines()),
+                new("txt", "derived from text")
+            ]));
+```
+<sup><a href='/src/Verify.Tests/Converters/ExtensionConverterTests.cs#L6-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-RegisterStreamConverterTextExtension' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+<!-- snippet: TextExtensionConverterVerify -->
+<a id='snippet-TextExtensionConverterVerify'></a>
+```cs
+Verify("the source text", "texttoconvert");
+```
+<sup><a href='/src/Verify.Tests/Converters/ExtensionConverterTests.cs#L30-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-TextExtensionConverterVerify' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ### Cleanup
 
 If cleanup needs to occur after verification a callback can be passes to `ConversionResult`:
@@ -165,6 +204,69 @@ return new(
 ```
 <sup><a href='/src/Verify.Tests/Converters/TypeConverterTests.cs#L32-L44' title='Snippet source file'>snippet source</a> | <a href='#snippet-ConversionResultWithCleanup' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Excluding targets
+
+Some converters emit the source document (for example a `pdf`, `docx`, or `xlsx`) alongside the info file and the derived targets. That source document is then committed as a `.verified.{extension}` file. Where the document is large, or where its bytes cannot be made deterministic, it can be excluded from the snapshot. The info file and the derived targets continue to verify.
+
+`ExcludeTargets` takes one or more extensions, and drops every matching target:
+
+<!-- snippet: ExcludeTargets -->
+<a id='snippet-ExcludeTargets'></a>
+```cs
+[Fact]
+public Task ExcludeConverterSourceTarget() =>
+    Verify(new MemoryStream("source-document"u8.ToArray()), "excludesource")
+        .ExcludeTargets("excludesource");
+```
+<sup><a href='/src/Verify.Tests/Converters/ExcludeTargetsTests.cs#L88-L95' title='Snippet source file'>snippet source</a> | <a href='#snippet-ExcludeTargets' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Any existing verified file for an excluded extension is then reported as pending deletion.
+
+To exclude an extension for every test, call `ExcludeTargets` on `VerifierSettings` at initialization:
+
+<!-- snippet: StaticExcludeTargets -->
+<a id='snippet-StaticExcludeTargets'></a>
+```cs
+public static class ModuleInitializer
+{
+    [ModuleInitializer]
+    public static void Init() =>
+        VerifierSettings.ExcludeTargets("pdf");
+}
+```
+<sup><a href='/src/ModuleInitDocs/ExcludeTargets.cs#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-StaticExcludeTargets' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Excluding every target of a verification is an error, since a verification requires at least one target.
+
+
+### Avoiding work in a converter
+
+Building the source document (for example rendering a pdf or a docx) can be expensive. When a target is excluded, it is dropped after the converter has produced it, so the work is wasted. A converter can instead check `IsTargetExcluded` on its `context` and skip producing the target entirely:
+
+<!-- snippet: ConverterExcludeCheck -->
+<a id='snippet-ConverterExcludeCheck'></a>
+```cs
+// A converter that builds an expensive source document only when its target is kept.
+static ConversionResult ConvertExcludeCheck(string? name, Stream stream, IReadOnlyDictionary<string, object> context)
+{
+    List<Target> targets = [new("txt", "the rendered pages")];
+    if (!context.IsTargetExcluded("excludecheck"))
+    {
+        // A real converter would build the document (eg render a pdf) here.
+        targets.Add(new("excludecheck", new MemoryStream("the source document"u8.ToArray())));
+    }
+
+    return new(null, targets);
+}
+```
+<sup><a href='/src/Verify.Tests/Converters/ExcludeTargetsTests.cs#L21-L36' title='Snippet source file'>snippet source</a> | <a href='#snippet-ConverterExcludeCheck' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+`IsTargetExcluded` reflects both the global and the per-verification `ExcludeTargets`, so shipping this check lets a caller opt out of the document build itself, rather than only its snapshot.
 
 
 ## Shipping

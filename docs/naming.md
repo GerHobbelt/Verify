@@ -789,7 +789,7 @@ public static string NameWithParent(this Type type)
     return type.Name;
 }
 ```
-<sup><a href='/src/Verify/Extensions.cs#L123-L135' title='Snippet source file'>snippet source</a> | <a href='#snippet-NameWithParent' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify/Extensions.cs#L132-L144' title='Snippet source file'>snippet source</a> | <a href='#snippet-NameWithParent' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Any path calculated in `DerivePathInfo` should be fully qualified to remove the inconsistency of the current directory.
@@ -804,6 +804,14 @@ For example to place all `.verified.` files in a `{ProjectDirectory}\Snapshots` 
 ```
 Verifier.UseProjectRelativeDirectory("Snapshots");
 ```
+
+To nest the `.verified.` files in sub-directories that mirror the directory structure of the test source files (relative to the project directory), enable `mirrorSourceStructure`:
+
+```
+Verifier.UseProjectRelativeDirectory("Snapshots", mirrorSourceStructure: true);
+```
+
+For example a test in `{ProjectDirectory}\Foo\FooTests.cs` would then have its `.verified.` files placed in `{ProjectDirectory}\Snapshots\Foo`. This can make orphaned snapshots easier to identify when test source files are moved, renamed, or removed.
 
 
 ### UseSourceFileRelativeDirectory
