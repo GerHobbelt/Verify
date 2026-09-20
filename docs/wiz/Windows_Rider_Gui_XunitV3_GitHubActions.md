@@ -18,7 +18,7 @@ Add the following packages to the test project:
 <a id='snippet-xunitv3-nugets'></a>
 ```csproj
 <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-<PackageReference Include="Verify.XunitV3" Version="31.25.0" />
+<PackageReference Include="Verify.XunitV3" VersionOverride="33.0.0-beta.3" Version="31.25.0" />
 <PackageReference Include="xunit.v3" Version="4.0.0" />
 ```
 <sup><a href='/usages/XunitV3NugetUsage/XunitV3NugetUsage.csproj#L8-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-xunitv3-nugets' title='Start of snippet'>anchor</a></sup>
@@ -75,7 +75,7 @@ All text extensions of `*.verified.*` should have:
  * `eol` set to `lf`
  * `working-tree-encoding` set to `UTF-8`
 
-Note: `working-tree-encoding=UTF-8` is correct even though Verify writes files with a BOM. Git does not strip or add the BOM — it passes through transparently. The `UTF-8-BOM` encoding would explicitly add a BOM on checkout and strip it on commit (so the internal blob differs from the working tree), but that is not the desired behavior since Verify writes the BOM itself and it should be preserved in the blob.
+Note: `working-tree-encoding=UTF-8` is correct even though Verify writes files with a BOM. Git does not strip or add the BOM - it passes through transparently. The `UTF-8-BOM` encoding would explicitly add a BOM on checkout and strip it on commit (so the internal blob differs from the working tree), but that is not the desired behavior since Verify writes the BOM itself and it should be preserved in the blob.
 
 All Binary files should also be marked to avoid merging and line ending issues with binary files.
 

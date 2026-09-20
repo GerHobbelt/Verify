@@ -21,6 +21,33 @@
         Assert.False(Recording.IsRecording());
     }
 
+    // The engine consumes the recording in a child context, so the null does not flow back
+    // and the test's own context still holds the stopped state. Starting again after that
+    // is the supported pattern, not a double start.
+    [Fact]
+    public async Task StartAfterConsumedInChildContext()
+    {
+        Recording.Start();
+        Recording.Add("name", "value1");
+        await Task.Run(() => Recording.TryStop(out _));
+
+        Recording.Start();
+        Recording.Add("name", "value2");
+
+        Assert.True(Recording.TryStop(out var recorded));
+        Assert.Equal(["value2"], recorded.Select(_ => _.Data));
+    }
+
+    [Fact]
+    public void StartWhileRecordingStillThrows()
+    {
+        using (Recording.Start())
+        {
+            var exception = Assert.Throws<Exception>(Recording.Start);
+            Assert.Equal("Recording already started", exception.Message);
+        }
+    }
+
     [Fact]
     public void DisposeAfterStopDoesNotThrow()
     {
@@ -38,6 +65,36 @@
         {
             Recording.Add("DisposeNamedAfterStop", "name", "value");
             Recording.Stop("DisposeNamedAfterStop");
+        }
+    }
+
+    // Named state lives in a static dictionary, so a scope left without an explicit Stop,
+    // for example because the test threw, would otherwise hold it and its recorded objects
+    // forever, and block the identifier for every later Start.
+    [Fact]
+    public void DisposeNamedReleasesTheIdentifier()
+    {
+        try
+        {
+            using (Recording.Start("DisposeNamedReleases"))
+            {
+                Recording.Add("DisposeNamedReleases", "name", "value");
+                throw new("test failure");
+            }
+        }
+        catch (Exception exception)
+            when (exception.Message == "test failure")
+        {
+        }
+
+        Assert.False(Recording.IsRecording("DisposeNamedReleases"));
+
+        // The identifier is free again
+        using (Recording.Start("DisposeNamedReleases"))
+        {
+            Recording.Add("DisposeNamedReleases", "name", "value2");
+            var recorded = Recording.Stop("DisposeNamedReleases");
+            Assert.Equal(["value2"], recorded.Select(_ => _.Data));
         }
     }
 

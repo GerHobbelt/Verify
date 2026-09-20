@@ -32,11 +32,9 @@ updated to the new result.<!-- endInclude -->
 
 ## Open Source Maintenance Fee
 
-This project participates in the [Open Source Maintenance Fee](https://opensourcemaintenancefee.org). The source code stays freely available under the terms of the [license](license.txt), and forks, self-compiled binaries, and contributions are unaffected. What the fee covers is use of the official binary releases, the packages published to NuGet, by organizations that generate revenue from them.
+This project participates in the [Open Source Maintenance Fee](https://opensourcemaintenancefee.org). The source code stays freely available under the terms of the [license](license.txt). The fee covers the use of the official binary releases, the packages published to NuGet, by organizations that generate revenue from them. Every version released after 1 September 2026 is covered; versions released on or before that date are not.
 
-Every version released after 1 September 2026 is covered. Versions released on or before that date are not.
-
-The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTests), billed monthly or annually, and available by invoice:
+The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTests) at the monthly tier matching the size of the organization:
 
 | Organization size | Fee (USD) |
 |---|---|
@@ -45,20 +43,15 @@ The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTe
 | 200 to 1000 employees | [$30/month](https://github.com/sponsors/VerifyTests/sponsorships?tier_id=645065) |
 | More than 1000 employees | [$100/month](https://github.com/sponsors/VerifyTests/sponsorships?tier_id=651172) |
 
-The fee applies to:
+From v33 (currently available as a beta on nuget), sponsorship is verified at build time by [SponsorCheck](https://github.com/SimonCropp/SponsorCheck). **Nothing phones home: the check runs inside the build, adds no runtime dependency to the packages, and issues no license keys.** A sponsoring organization declares its account once, in a `Directory.Build.props` at the root of the repository, and that covers every project and every Verify package:
 
- * Organizations using the official binary releases in revenue-generating activities, with an annual gross revenue of at least US$10,000.
- * Government agencies.
+```xml
+<PropertyGroup>
+  <Verify_GitHubSponsorAccount>your-github-account</Verify_GitHubSponsorAccount>
+</PropertyGroup>
+```
 
-Exempt from the fee:
-
- * Individuals.
- * Organizations that do not generate revenue, other than government agencies.
- * Organizations that engage the core maintainers for consulting work, for six months from the final date of that engagement.
-
-From v33 (currently available as a beta on nuget), sponsorship is validated at build time by [SponsorCheck](https://github.com/SimonCropp/SponsorCheck). Each package bundles a hashed list of sponsors and a build-time verifier, and a consuming project declares how it is licensed as metadata on the `PackageReference`: a sponsor account, a private arrangement, an exemption, or `SponsorshipLicenseIgnored="true"`, which builds with a warning rather than an error. Nothing phones home: the check runs inside the build, adds no runtime dependency to the packages, and issues no license keys. See the [consumer guide](https://github.com/SimonCropp/SponsorCheck/blob/main/docs/ConsumerUsage.md) for the metadata and the diagnostic codes.
-
-For the reasoning behind the model, and the discussion the terms came out of, see [Open Source Maintenance Fee for Verify](https://github.com/orgs/VerifyTests/discussions/1731). For the model itself, see the [OSMF FAQ for consumers](https://opensourcemaintenancefee.org/consumers/faq/).
+Who the fee applies to, the exemptions, paying by invoice, and the other declarations (exemptions, private arrangements, opting out) are covered in [Open Source Maintenance Fee](/docs/maintenance-fee.md). The [SponsorCheck setup wizard for Verify](https://simoncropp.github.io/SponsorCheck/package/Verify) generates the exact snippet for any of them.
 
 
 ## Supporters
@@ -643,7 +636,7 @@ All text extensions of `*.verified.*` should have:
  * `eol` set to `lf`
  * `working-tree-encoding` set to `UTF-8`
 
-Note: `working-tree-encoding=UTF-8` is correct even though Verify writes files with a BOM. Git does not strip or add the BOM — it passes through transparently. The `UTF-8-BOM` encoding would explicitly add a BOM on checkout and strip it on commit (so the internal blob differs from the working tree), but that is not the desired behavior since Verify writes the BOM itself and it should be preserved in the blob.
+Note: `working-tree-encoding=UTF-8` is correct even though Verify writes files with a BOM. Git does not strip or add the BOM - it passes through transparently. The `UTF-8-BOM` encoding would explicitly add a BOM on checkout and strip it on commit (so the internal blob differs from the working tree), but that is not the desired behavior since Verify writes the BOM itself and it should be preserved in the blob.
 
 All Binary files should also be marked to avoid merging and line ending issues with binary files.
 
@@ -934,26 +927,48 @@ This readme will not discuss definitive list of details for proper setup of the 
 
 ## Project inclusion for `*.received.*` and `*.verified.*` files
 
-Verify comes with default MSBuild includes for snapshot files (`*.received.*` and `*.verified.*`) that nests those files under the test that produced them. C#, VB and F# projects are supported.
+Verify comes with default MSBuild includes for snapshot files (`*.received.*` and `*.verified.*`) that nests those files under the test that produced them. C#, VB and F# projects are supported. In Blazor projects, snapshots nest under the `.razor.cs` code-behind of the component under test, or under the `.razor` file when that component has no code-behind.
 
 <!-- snippet: Verify.AfterMicrosoftNetSdk.props -->
 <a id='snippet-Verify.AfterMicrosoftNetSdk.props'></a>
 ```props
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+  Probing for a Blazor parent costs a file system hit per snapshot file, so it is only done in
+  projects that contain razor files. A code behind is included in that, since a test class can sit
+  in one without the project holding the matching .razor.
+  -->
+  <ItemGroup Condition="('$(DisableVerifyFileNesting)' != 'true') And $(Language) == 'C#'">
+    <VerifyRazorFile Include="**\*.razor;**\*.razor.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+  <PropertyGroup Condition="('$(DisableVerifyFileNesting)' != 'true')">
+    <VerifyRazorFileCount>@(VerifyRazorFile->Count())</VerifyRazorFileCount>
+  </PropertyGroup>
+  <!--
+  The SDK has already globbed the snapshots into None, so the metadata is applied with an Update.
+  Adding a second item for a file the SDK holds would leave it in None twice, and anything that
+  copies None into Content (eg DotNetProjectFile.Analyzers) then fails the build with NETSDK1022.
+  The Include only picks up snapshots the SDK did not, such as when default items are disabled.
+  -->
   <ItemGroup Condition="('$(DisableVerifyFileNesting)' != 'true')">
-    <None Include="**\*.received.*;**\*.verified.*" Condition="$(Language) == 'C#'">
+    <None Include="**\*.received.*;**\*.verified.*" Exclude="@(None);$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="$(Language) == 'C#' Or $(Language) == 'VB'" />
+    <None Update="**\*.received.*;**\*.verified.*" Condition="$(Language) == 'C#'">
       <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
-      <DependentUpon>%(ParentFile).cs</DependentUpon>
+      <ParentExtension>.cs</ParentExtension>
+      <!-- A Blazor component keeps its code in a .razor.cs code-behind, or in the .razor file itself -->
+      <ParentExtension Condition="'$(VerifyRazorFileCount)' != '0' And Exists('$(MSBuildProjectDirectory)\%(RelativeDir)%(ParentFile).razor.cs')">.razor.cs</ParentExtension>
+      <ParentExtension Condition="'$(VerifyRazorFileCount)' != '0' And '%(ParentExtension)' == '.cs' And !Exists('$(MSBuildProjectDirectory)\%(RelativeDir)%(ParentFile).cs') And Exists('$(MSBuildProjectDirectory)\%(RelativeDir)%(ParentFile).razor')">.razor</ParentExtension>
+      <DependentUpon>%(ParentFile)%(ParentExtension)</DependentUpon>
     </None>
-    <None Include="**\*.received.*;**\*.verified.*" Condition="$(Language) == 'VB'">
+    <None Update="**\*.received.*;**\*.verified.*" Condition="$(Language) == 'VB'">
       <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
       <DependentUpon>%(ParentFile).vb</DependentUpon>
     </None>
   </ItemGroup>
 </Project>
 ```
-<sup><a href='/src/Verify/buildTransitive/Verify.AfterMicrosoftNetSdk.props#L1-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-Verify.AfterMicrosoftNetSdk.props' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Verify/buildTransitive/Verify.AfterMicrosoftNetSdk.props#L1-L35' title='Snippet source file'>snippet source</a> | <a href='#snippet-Verify.AfterMicrosoftNetSdk.props' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 To opt out of this feature, include the following in the project file:
@@ -1146,7 +1161,8 @@ Browser testing via
   * [FSharp Usage](/docs/fsharp.md)
   * [Compared to ApprovalTests](/docs/compared-to-approvaltests.md)
   * [AI Usage](/docs/ai-usage.md)
-  * [Plugins](/docs/plugins.md)<!-- endInclude -->
+  * [Plugins](/docs/plugins.md)
+  * [Open Source Maintenance Fee](/docs/maintenance-fee.md)<!-- endInclude -->
 
 
 ## Icon

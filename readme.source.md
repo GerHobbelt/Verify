@@ -20,11 +20,9 @@ include: intro
 
 ## Open Source Maintenance Fee
 
-This project participates in the [Open Source Maintenance Fee](https://opensourcemaintenancefee.org). The source code stays freely available under the terms of the [license](license.txt), and forks, self-compiled binaries, and contributions are unaffected. What the fee covers is use of the official binary releases, the packages published to NuGet, by organizations that generate revenue from them.
+This project participates in the [Open Source Maintenance Fee](https://opensourcemaintenancefee.org). The source code stays freely available under the terms of the [license](license.txt). The fee covers the use of the official binary releases, the packages published to NuGet, by organizations that generate revenue from them. Every version released after 1 September 2026 is covered; versions released on or before that date are not.
 
-Every version released after 1 September 2026 is covered. Versions released on or before that date are not.
-
-The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTests), billed monthly or annually, and available by invoice:
+The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTests) at the monthly tier matching the size of the organization:
 
 | Organization size | Fee (USD) |
 |---|---|
@@ -33,20 +31,15 @@ The fee is paid by [sponsoring VerifyTests](https://github.com/sponsors/VerifyTe
 | 200 to 1000 employees | [$30/month](https://github.com/sponsors/VerifyTests/sponsorships?tier_id=645065) |
 | More than 1000 employees | [$100/month](https://github.com/sponsors/VerifyTests/sponsorships?tier_id=651172) |
 
-The fee applies to:
+From v33 (currently available as a beta on nuget), sponsorship is verified at build time by [SponsorCheck](https://github.com/SimonCropp/SponsorCheck). **Nothing phones home: the check runs inside the build, adds no runtime dependency to the packages, and issues no license keys.** A sponsoring organization declares its account once, in a `Directory.Build.props` at the root of the repository, and that covers every project and every Verify package:
 
- * Organizations using the official binary releases in revenue-generating activities, with an annual gross revenue of at least US$10,000.
- * Government agencies.
+```xml
+<PropertyGroup>
+  <Verify_GitHubSponsorAccount>your-github-account</Verify_GitHubSponsorAccount>
+</PropertyGroup>
+```
 
-Exempt from the fee:
-
- * Individuals.
- * Organizations that do not generate revenue, other than government agencies.
- * Organizations that engage the core maintainers for consulting work, for six months from the final date of that engagement.
-
-From v33 (currently available as a beta on nuget), sponsorship is validated at build time by [SponsorCheck](https://github.com/SimonCropp/SponsorCheck). Each package bundles a hashed list of sponsors and a build-time verifier, and a consuming project declares how it is licensed as metadata on the `PackageReference`: a sponsor account, a private arrangement, an exemption, or `SponsorshipLicenseIgnored="true"`, which builds with a warning rather than an error. Nothing phones home: the check runs inside the build, adds no runtime dependency to the packages, and issues no license keys. See the [consumer guide](https://github.com/SimonCropp/SponsorCheck/blob/main/docs/ConsumerUsage.md) for the metadata and the diagnostic codes.
-
-For the reasoning behind the model, and the discussion the terms came out of, see [Open Source Maintenance Fee for Verify](https://github.com/orgs/VerifyTests/discussions/1731). For the model itself, see the [OSMF FAQ for consumers](https://opensourcemaintenancefee.org/consumers/faq/).
+Who the fee applies to, the exemptions, paying by invoice, and the other declarations (exemptions, private arrangements, opting out) are covered in [Open Source Maintenance Fee](/docs/maintenance-fee.md). The [SponsorCheck setup wizard for Verify](https://simoncropp.github.io/SponsorCheck/package/Verify) generates the exact snippet for any of them.
 
 
 ## Supporters
@@ -383,7 +376,7 @@ This readme will not discuss definitive list of details for proper setup of the 
 
 ## Project inclusion for `*.received.*` and `*.verified.*` files
 
-Verify comes with default MSBuild includes for snapshot files (`*.received.*` and `*.verified.*`) that nests those files under the test that produced them. C#, VB and F# projects are supported.
+Verify comes with default MSBuild includes for snapshot files (`*.received.*` and `*.verified.*`) that nests those files under the test that produced them. C#, VB and F# projects are supported. In Blazor projects, snapshots nest under the `.razor.cs` code-behind of the component under test, or under the `.razor` file when that component has no code-behind.
 
 snippet: Verify.AfterMicrosoftNetSdk.props
 
