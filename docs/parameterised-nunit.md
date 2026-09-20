@@ -198,7 +198,23 @@ For the fluent case:
 
  * NamerTests.IgnoreParametersForVerifiedFluent_arg=One.received.txt
  * NamerTests.IgnoreParametersForVerifiedFluent_arg=Two.received.txt
- * NamerTests.IgnoreParametersForVerifiedFluent.verified.txt<!-- endInclude -->
+ * NamerTests.IgnoreParametersForVerifiedFluent.verified.txt
+
+
+### Static IgnoreParameters
+
+`VerifierSettings.IgnoreParameters()` can be used to globally ignore specific parameters (by name) for all tests. This is useful when a parameter is non-deterministic or irrelevant to the verified output across the entire test suite. It must be called before any test runs, typically in a `[ModuleInitializer]`.
+
+When passing an empty list, all parameters will be ignored. When passing specific parameter names, only those parameters will be excluded from the verified filename. Parameters that do not exist on a given test method are silently skipped.
+
+The received files still contain all parameter values.
+
+```cs
+[ModuleInitializer]
+public static void Init() =>
+    VerifierSettings.IgnoreParameters("arg");
+```
+<!-- endInclude -->
 
 
 ### Instance
@@ -232,6 +248,28 @@ public Task IgnoreParametersForVerifiedFluent(string arg) =>
 ```
 <sup><a href='/src/Verify.NUnit.Tests/Snippets/ParametersSample.cs#L70-L78' title='Snippet source file'>snippet source</a> | <a href='#snippet-IgnoreParametersForVerifiedFluentNunit' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## Ignore constructor parameters for verified filename
+
+### Ignore constructor parameters<!-- include: ignore-constructor-parameters. path: /docs/mdsource/ignore-constructor-parameters.include.md -->
+
+`VerifierSettings.IgnoreConstructorParameters()` can be used to globally ignore class constructor arguments from the verified filename. This is useful when infrastructure fixtures (e.g. TUnit's `ClassConstructor` or NUnit's `TestFixtureSource`) are injected via the constructor and should not affect snapshot file names. It must be called before any test runs, typically in a `[ModuleInitializer]`.
+
+The received files still contain all class argument values.
+
+```cs
+[ModuleInitializer]
+public static void Init() =>
+    VerifierSettings.IgnoreConstructorParameters();
+```
+
+`IgnoreConstructorParameters` can also be used at the test level:
+
+```cs
+await Verify(result).IgnoreConstructorParameters();
+```
+<!-- endInclude -->
 
 
 ## IgnoreParametersForVerified with override parameters

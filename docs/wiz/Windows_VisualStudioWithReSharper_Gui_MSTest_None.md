@@ -17,9 +17,9 @@ Add the following packages to the test project:
 <!-- snippet: mstest-nugets -->
 <a id='snippet-mstest-nugets'></a>
 ```csproj
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
 <PackageReference Include="MSTest" Version="4.1.0" />
-<PackageReference Include="Verify.MSTest" Version="31.13.1" />
+<PackageReference Include="Verify.MSTest" Version="31.15.0" />
 ```
 <sup><a href='/usages/MSTestNugetUsage/MSTestNugetUsage.csproj#L7-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-mstest-nugets' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -310,6 +310,8 @@ While IDEs are supported, due to their MDI nature, using a different Diff Tool i
 
 Tools supported by Windows:
 
+ * [MsWordDiff](https://github.com/SimonCropp/MsOfficeDiff)
+ * [MsExcelDiff](https://github.com/SimonCropp/MsOfficeDiff)
  * [BeyondCompare](https://www.scootersoftware.com)
  * [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
  * [DeltaWalker](https://www.deltawalker.com/)
@@ -325,5 +327,4 @@ Tools supported by Windows:
  * [Rider](https://www.jetbrains.com/rider/)
  * [Vim](https://www.vim.org/)
  * [Neovim](https://neovim.io/)
- * [MsWordDiff](https://github.com/SimonCropp/MsWordDiff)
 

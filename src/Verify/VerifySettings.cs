@@ -49,6 +49,8 @@ public partial class VerifySettings
         extensionStreamComparers = settings.extensionStreamComparers;
         parameters = settings.parameters;
         ignoredParameters = settings.ignoredParameters;
+        classArgumentCount = settings.classArgumentCount;
+        ignoreConstructorParameters = settings.ignoreConstructorParameters;
         ignoreParametersForVerified = settings.ignoreParametersForVerified;
         parametersText = settings.parametersText;
         FileName = settings.FileName;

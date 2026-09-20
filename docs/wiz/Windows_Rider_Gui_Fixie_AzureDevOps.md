@@ -18,7 +18,7 @@ Add the following packages to the test project:
 <a id='snippet-fixie-nugets'></a>
 ```csproj
 <PackageReference Include="Fixie" Version="4.2.0" />
-<PackageReference Include="Verify.Fixie" Version="31.13.1" />
+<PackageReference Include="Verify.Fixie" Version="31.15.0" />
 ```
 <sup><a href='/usages/FixieNugetUsage/FixieNugetUsage.csproj#L7-L10' title='Snippet source file'>snippet source</a> | <a href='#snippet-fixie-nugets' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -317,6 +317,8 @@ While IDEs are supported, due to their MDI nature, using a different Diff Tool i
 
 Tools supported by Windows:
 
+ * [MsWordDiff](https://github.com/SimonCropp/MsOfficeDiff)
+ * [MsExcelDiff](https://github.com/SimonCropp/MsOfficeDiff)
  * [BeyondCompare](https://www.scootersoftware.com)
  * [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
  * [DeltaWalker](https://www.deltawalker.com/)
@@ -332,7 +334,6 @@ Tools supported by Windows:
  * [Rider](https://www.jetbrains.com/rider/)
  * [Vim](https://www.vim.org/)
  * [Neovim](https://neovim.io/)
- * [MsWordDiff](https://github.com/SimonCropp/MsWordDiff)
 
 ## Getting .received in output on Azure DevOps
 

@@ -19,6 +19,12 @@ static class FileNameBuilder
     {
         type = settings.TypeName ?? pathInfo.TypeName ?? type;
         method = settings.MethodName ?? pathInfo.MethodName ?? method;
+
+        if (type.Length == 0)
+        {
+            return method;
+        }
+
         return $"{type}.{method}";
     }
 
@@ -47,10 +53,41 @@ static class FileNameBuilder
             .Zip(settingsParameters, (name, value) => new KeyValuePair<string, object?>(name, value))
             .ToArray();
 
-        var ignored = settings.ignoredParameters;
-        if (ignored?.All(methodParameters.Contains) == false)
+        var instanceIgnored = settings.ignoredParameters;
+        if (instanceIgnored?.All(methodParameters.Contains) == false)
         {
-            throw new($"Some of the ignored parameter names ({string.Join(", ", ignored)}) do not exist in the test method parameters ({string.Join(", ", methodParameters)}).");
+            throw new($"Some of the ignored parameter names ({string.Join(", ", instanceIgnored)}) do not exist in the test method parameters ({string.Join(", ", methodParameters)}).");
+        }
+
+        var ignored = instanceIgnored;
+        var globalIgnored = VerifierSettings.GlobalIgnoredParameters;
+        if (globalIgnored is not null)
+        {
+            if (ignored is not null)
+            {
+                ignored = [..ignored, ..globalIgnored];
+            }
+            else
+            {
+                ignored = globalIgnored;
+            }
+        }
+
+        if (settings.ignoreConstructorParameters || VerifierSettings.GlobalIgnoreConstructorParameters)
+        {
+            var classArgCount = settings.classArgumentCount;
+            if (classArgCount > 0)
+            {
+                var classParamNames = methodParameters.Take(classArgCount);
+                if (ignored is not null)
+                {
+                    ignored = [..ignored, ..classParamNames];
+                }
+                else
+                {
+                    ignored = classParamNames.ToHashSet();
+                }
+            }
         }
 
         var verifiedValues = GetVerifiedValues(ignored, allValues);

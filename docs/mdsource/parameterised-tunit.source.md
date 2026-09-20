@@ -56,6 +56,11 @@ snippet: IgnoreParametersForVerifiedTUnit
 snippet: IgnoreParametersForVerifiedFluentTUnit
 
 
+## Ignore constructor parameters for verified filename
+
+include: ignore-constructor-parameters
+
+
 ## IgnoreParametersForVerified with override parameters
 
 The parameters passed to IgnoreParametersForVerified can be used pass custom parameters to [UseParameters](#UseParameters).

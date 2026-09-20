@@ -17,8 +17,8 @@ Add the following packages to the test project:
 <!-- snippet: xunitv3-nugets -->
 <a id='snippet-xunitv3-nugets'></a>
 ```csproj
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-<PackageReference Include="Verify.XunitV3" Version="31.13.1" />
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+<PackageReference Include="Verify.XunitV3" Version="31.15.0" />
 <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="all" />
 <PackageReference Include="xunit.v3" Version="3.2.2" />
 ```
@@ -201,6 +201,8 @@ While IDEs are supported, due to their MDI nature, using a different Diff Tool i
 
 Tools supported by Windows:
 
+ * [MsWordDiff](https://github.com/SimonCropp/MsOfficeDiff)
+ * [MsExcelDiff](https://github.com/SimonCropp/MsOfficeDiff)
  * [BeyondCompare](https://www.scootersoftware.com)
  * [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
  * [DeltaWalker](https://www.deltawalker.com/)
@@ -216,7 +218,6 @@ Tools supported by Windows:
  * [Rider](https://www.jetbrains.com/rider/)
  * [Vim](https://www.vim.org/)
  * [Neovim](https://neovim.io/)
- * [MsWordDiff](https://github.com/SimonCropp/MsWordDiff)
 
 ## Getting .received in output on GitHub Actions
 
