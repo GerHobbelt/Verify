@@ -6,8 +6,7 @@ public class InnerVerifyTests
 
     static InnerVerifyTests()
     {
-        var solutionDirectory = AttributeReader.GetSolutionDirectory();
-        targetDirectory = Path.Combine(solutionDirectory, "Verify.Tests", "InnerVerifyTests");
+        targetDirectory = Path.Combine(ProjectFiles.ProjectDirectory, "InnerVerifyTests");
         filePath = Path.Combine(targetDirectory, "sample.txt");
         splitFilePath = Path.Combine(targetDirectory, "sample.innersplit");
     }
@@ -83,5 +82,36 @@ public class InnerVerifyTests
     {
         using var verifier = new InnerVerifier(targetDirectory, "split");
         await verifier.VerifyFile(splitFilePath);
+    }
+
+    /// <summary>
+    /// A named target that is the only one of its name was written to the file an unnamed one
+    /// has, so two of them, each page of a document, went to the same file.
+    /// </summary>
+    [Fact]
+    public async Task NamedTargetsAreNamed()
+    {
+        using var temp = new TempDirectory();
+        var settings = new VerifySettings();
+        settings.AutoVerify();
+        settings.DisableDiff();
+        using var verifier = new InnerVerifier(temp, "named", settings);
+        List<Target> targets =
+        [
+            new("txt", "the first page", "page_0001"),
+            new("txt", "the second page", "page_0002")
+        ];
+
+        var result = await verifier.Verify(targets);
+
+        Assert.Equal(
+            [
+                "named#page_0001.verified.txt",
+                "named#page_0002.verified.txt"
+            ],
+            result.Files.Select(Path.GetFileName));
+        Assert.Equal(
+            "the second page",
+            await File.ReadAllTextAsync(Path.Combine(temp.Path, "named#page_0002.verified.txt"), Encoding.UTF8));
     }
 }
