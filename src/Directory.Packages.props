@@ -4,8 +4,8 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Argon" Version="0.37.0" />
-    <PackageVersion Include="Argon.FSharp" Version="0.37.0" />
+    <PackageVersion Include="Argon" Version="0.38.0" />
+    <PackageVersion Include="Argon.FSharp" Version="0.38.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="DiffEngine" Version="20.7.0" />
     <PackageVersion Include="Expecto" Version="11.1.0" />
@@ -18,18 +18,19 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" Pinned="true" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.4.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.0" />
     <PackageVersion Include="NUnit" Version="5.0.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="4.4.1" />
     <PackageVersion Include="MSTest.TestFramework" Version="4.4.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.0" />
-    <PackageVersion Include="Polyfill" Version="11.4.2" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.182" />
+    <PackageVersion Include="Polyfill" Version="11.4.3" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="ProjectFiles" Version="1.6.0" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Sbom" Version="0.3.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.0" />
-    <PackageVersion Include="SponsorCheck" Version="0.26.0" GitHubSponsorsAccount="VerifyTests" SponsorOwner="Verify" CheckTransitiveReferences="true" SponsorLandingUrl="https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md" />
+    <PackageVersion Include="Squash" Version="0.1.0-beta.2" />
+    <PackageVersion Include="SponsorCheck" Version="0.27.0" GitHubSponsorsAccount="VerifyTests" SponsorOwner="Verify" CheckTransitiveReferences="true" SponsorLandingUrl="https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md" />
     <PackageVersion Include="System.Drawing.Common" Version="10.0.12" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <!-- keep at 4.5.0 -->
