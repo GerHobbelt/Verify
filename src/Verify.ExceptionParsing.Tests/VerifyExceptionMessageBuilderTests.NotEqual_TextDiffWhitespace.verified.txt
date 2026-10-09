@@ -1,0 +1,17 @@
+﻿Directory: {ProjectDirectory}
+NotEqual:
+  - Received: VerifyExceptionMessageBuilderTests.Fake.received.txt
+    Verified: VerifyExceptionMessageBuilderTests.Fake.verified.txt
+
+FileContent:
+
+NotEqual:
+
+Received: VerifyExceptionMessageBuilderTests.Fake.received.txt
+Verified: VerifyExceptionMessageBuilderTests.Fake.verified.txt
+Diff:
+1 a
+- b
++   b
+3 c
+
